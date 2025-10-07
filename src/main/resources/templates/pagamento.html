@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagamento com Stripe</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #card-element { border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-top: 10px; }
+        button { background: #6772e5; color: white; border: none; padding: 10px 20px; margin-top: 20px; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #5469d4; }
+    </style>
+</head>
+<body>
+<h2>💳 Pagamento com Stripe</h2>
+
+<form id="payment-form">
+    <label>Valor (R$):</label>
+    <input type="number" id="valor" value="10.00" min="1" step="0.01">
+    <div id="card-element"></div>
+    <button type="submit">Pagar</button>
+</form>
+
+<p id="mensagem"></p>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+   const stripe = Stripe([[${stripePublicKey}]]);
+    const elements = stripe.elements();
+    const card = elements.create('card');
+    card.mount('#card-element');
+
+    const form = document.getElementById('payment-form');
+    const mensagem = document.getElementById('mensagem');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const { token, error } = await stripe.createToken(card);
+        if (error) {
+            mensagem.textContent = error.message;
+        } else {
+            const valor = parseFloat(document.getElementById('valor').value);
+
+            const resp = await fetch('/charge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    stripeToken: token.id,
+                    valor: valor
+                })
+            });
+
+            const txt = await resp.text();
+            mensagem.textContent = txt;
+        }
+    });
+/*]]>*/
+</script>
+</body>
+</html>
