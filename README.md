@@ -5,7 +5,8 @@ Com isso, as transações ficam mais seguras, pois os dados do carão são conve
 Ou seja, o Token obtido pelo Strip, representa o cartão com número, CVC e Data. O back-end recebe esse token, e jamais armazena os dados reais do cartão digitado pelo usuário no front-end.
 
 ### Exemplo da aplicação rodando
-<img width="927" height="408" alt="image" src="https://github.com/user-attachments/assets/971a061e-69de-4491-ac59-fd2a09c14c53" />
+<img width="612" height="592" alt="image" src="https://github.com/user-attachments/assets/4f763652-887b-4313-ae8d-68e1b25b35ec" />
+
 
 Para executar, basta: 
  - Rodar a aplicação: mvn spring-boot:run
