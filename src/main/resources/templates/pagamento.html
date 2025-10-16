@@ -5,23 +5,147 @@
     <title>Pagamento com Stripe</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        #card-element { border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-top: 10px; }
-        button { background: #6772e5; color: white; border: none; padding: 10px 20px; margin-top: 20px; border-radius: 5px; cursor: pointer; }
-        button:hover { background: #5469d4; }
+        /* ====== Layout base ====== */
+        body {
+            font-family: "Inter", Arial, sans-serif;
+            background: #f5f7fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* ====== Card principal ====== */
+        .container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 380px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* ====== Campos ====== */
+        label {
+            display: block;
+            text-align: left;
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 15px;
+            margin-bottom: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #6772e5;
+        }
+
+        #card-element {
+            border: 1px solid #d0d0d0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* ====== Botão ====== */
+        button {
+            background: #6772e5;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background: #5469d4;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* ====== Texto informativo ====== */
+        .ptext {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.45);
+            margin: 0.2rem 0;
+        }
+
+        /* ====== Mensagem ====== */
+        #mensagem {
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        #mensagem.sucesso {
+            color: #28a745;
+        }
+
+        #mensagem.erro {
+            color: #dc3545;
+        }
+
+        .msg {
+       display: none;  /* escondido por padrão */
+    padding: 10px 15px;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: white;
+    font-weight: 500;
+    margin-top: 15px;
+}
+
+        
     </style>
 </head>
 <body>
-<h2>💳 Pagamento com Stripe</h2>
+<div class="container">
+    <h2>💳 Pagamento com Stripe</h2>
 
-<form id="payment-form">
-    <label>Valor (R$):</label>
-    <input type="number" id="valor" value="10.00" min="1" step="0.01">
-    <div id="card-element"></div>
-    <button type="submit">Pagar</button>
-</form>
+    <form id="payment-form">
+        <label for="valor">Valor (R$):</label>
+        <input type="number" id="valor" value="10.00" min="1" step="0.01">
 
-<p id="mensagem"></p>
+        <label>Informações do cartão:</label>
+        <div id="card-element"></div>
+
+        <p class="ptext">Cartão para teste: 4242 4242 4242 4242</p>
+        <p class="ptext">Data: 02/33, CVV: 123 e CEP: 12345</p>
+
+        <button type="submit">Pagar</button>
+    </form>
+
+  
+        
+    <p id="mensagem" class="msg"></p>
+</div>
+
+
 
 <script th:inline="javascript">
 /*<![CDATA[*/
@@ -51,8 +175,14 @@
                 })
             });
 
-            const txt = await resp.text();
-            mensagem.textContent = txt;
+            // const txt = await resp.text();
+            // mensagem.textContent = txt.slice(0, 2).join(' ');
+
+            const txt = (await resp.text()).trim(); // remove espaços extras no começo/fim
+const palavras = txt.split(/\s+/);      // divide a string em palavras
+mensagem.textContent = palavras.slice(0, 2).join(' '); // pega só as 2 primeiras
+mensagem.style.display = 'inline-block';
+         
         }
     });
 /*]]>*/
